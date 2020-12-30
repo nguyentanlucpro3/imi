@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)https://api.ohmnilabs.com/ohmni-api/test-incall.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script src="./Ohmni-incall.js.download"></script>
+  <script>
+    var intervalGetVideo;
+    var recordAudio = [''];
+    function setRedLight() {
+      Ohmni.setLightColor(360, 100, 100);
+    }
+
+    function setGreenLight() {
+      Ohmni.setLightColor(123, 100, 100);
+    }
+
+    function setBlueLight() {
+      Ohmni.setLightColor(240, 100, 100);
+    }
+
+    function move(lspeed,rspeed,time) {
+      Ohmni.move(lspeed, rspeed, time);
+    }
+
+    function setNeckPosition() {
+      Ohmni.setNeckPosition(650, 100);
+    }
+
+    function setNeckTorqueEnabled() {
+      Ohmni.setNeckTorqueEnabled(1);
+    }
+
+    function setNeckTorqueDisabled() {
+      Ohmni.setNeckTorqueEnabled(0);
+    }
+
+    function setURL(url) {
+      Ohmni.showPageOnBot(url)
+    }
+
+    function hidePage() {
+      Ohmni.hidePageOnBot();
+    }
+
+    function requestBotInfo() {
+      Ohmni.requestBotInfo();
+    }
+
+    function captureVideo() {
+      intervalGetVideo = setInterval(function() {
+        Ohmni.captureVideo();
+      }, 33);
+      document.getElementById('videoCall').style.display = "";
+      document.getElementById('stopCaptureVideo').style.display = "inline-block";
+      document.getElementById('startCaptureVideo').style.display = "none";
+    }
+
+    function stopCaptureVideo() {
+      clearInterval(intervalGetVideo);
+      document.getElementById('videoCall').style.display = "none";
+      document.getElementById('startCaptureVideo').style.display = "inline-block";
+      document.getElementById('stopCaptureVideo').style.display = "none";
+    }
+
+    function captureVideoCb(imageBase64) {
+      document.getElementById("videoCall").src = imageBase64;
+    }
+
+    function captureAudio() {
+      recordAudio = [''];
+      Ohmni.captureAudio();
+      document.getElementById('captureAudio').style.display = "none";
+      document.getElementById('stopCaptureAudio').style.display = "inline-block";
+      document.getElementById('audioRawData').style.display = "inline-block";
+    }
+
+    function setBotVolume(value) {
+      Ohmni.setBotVolume(value);
+    }
+
+    function getBotVolume() {
+      Ohmni.getBotVolume();
+    }
+
+    function getBotVolumeCb(value) {
+      console.log('botVolume', value);
+      document.getElementById("botVolume").innerHTML = "value: " + value;
+    }
+
+  
+
+    function hideBotInfo() {
+      document.querySelector("#bot_info").style.display = "none";
+    }
+
+    const intToIPV4 = num => {
+      console.log(num);
+      const part1 = num & 255;
+      const part2 = (num >> 8) & 255;
+      const part3 = (num >> 16) & 255;
+      const part4 = (num >> 24) & 255;
+      return `${part1}.${part2}.${part3}.${part4}`;
+    };
+
+    function onLoad() {
+      hideBotInfo();
+    }
+
+    Ohmni.on('capi', function(msg) {
+      console.log(msg);
+    })
+  </script>
+</head>
+<body onload="onLoad()">
+  <div style="display: flex; flex-direction: row; justify-content: space-between">
+    <div>
+      <button type="button" id="setBotVolume" data-external="true" class="button" style="padding:30px;margin:20px; margin-top: 60px" onclick="setBotVolume(2);">setBotVolume(2)</button><br>
+      <button type="button" id="getBotVolume" data-external="true" class="button" style="padding:30px;margin:20px; margin-top: 60px" onclick="getBotVolume();">getBotVolume <p id="botVolume"></p></button><br>
+      <button type="button" id="captureAudio" data-external="true" class="button" style="padding:30px;margin:20px; margin-top: 60px" onclick="captureAudio();">captureAudio</button><br>
+      <button type="button" id="stopCaptureAudio" data-external="true" class="button" style="padding:30px;margin:20px; margin-top: 60px;display: none;" onclick="stopCaptureAudio();">stopCaptureAudio</button><br>
+      <a id="downloadAudio" style="margin-left: 20px;display: none;" download="stream_audio.wav" href="https://api.ohmnilabs.com/ohmni-api/test-incall.html">Download audio</a> <br>
+      <textarea style="padding:30px;margin:20px; margin-top: 60px;display: none;" id="audioRawData"></textarea><br>
+      <button type="button" id="startCaptureVideo" data-external="true" class="button" style="padding:30px;margin:20px; margin-top: 60px" onclick="captureVideo();">startCaptureVideo</button><br>
+      <button type="button" id="stopCaptureVideo" data-external="true" class="button" style="padding:30px;margin:20px; margin-top: 60px; display: none;" onclick="stopCaptureVideo();">stopCaptureVideo</button><br>
+      <img src="https://api.ohmnilabs.com/ohmni-api/test-incall.html" width="200" height="200px" id="videoCall" style="display: none;"> <br>
+      <button type="button" data-external="true" class="button" style="padding:30px;margin:20px" onclick="setBlueLight();">Set BLUE!</button><br>
+      <button type="button" data-external="true" class="button" style="padding:30px;margin:20px" onclick="move(-200,200,1000);">Move Up</button><br>
+      <button type="button" data-external="true" class="button" style="padding:30px;margin:20px" onclick="move(200,-200,1000);">Move down</button><br>
+      <button type="button" data-external="true" class="button" style="padding:30px;margin:20px" onclick="move(-300,0,1000);">Move Right</button><br>
+      <button type="button" data-external="true" class="button" style="padding:30px;margin:20px" onclick="move(0,300,1000);">Move left</button><br>
+      <button type="button" data-external="true" class="button" style="padding:30px;margin:20px" onclick="hidePage();">Back to Call</button><br>
+      <button type="button" data-external="true" class="button" style="padding:30px;margin:20px; margin-bottom: 60px" onclick="setRedLight();">Set RED!</button><br>
+    </div>
+
+
+  </div>
+
+
+</body></html>
